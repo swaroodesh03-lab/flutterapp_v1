@@ -549,16 +549,35 @@ class _StoryBookPageState extends State<StoryBookPage> {
                     borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
                   ),
                   child: Center(
-                    child: _currentPage == 0 
-                      ? Transform.scale(scale: 0.8, child: BookCoverPreview(avatar: widget.avatar))
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(widget.avatar.imagePath, height: 300),
-                            const SizedBox(height: 20),
-                            Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
-                          ],
-                        ),
+                    child: _currentPage == 0
+                        ? Transform.scale(scale: 0.8, child: BookCoverPreview(avatar: widget.avatar))
+                        : _currentPage == 1
+                            ? Transform.scale(
+                                scale: 1.2,
+                                child: PagePreview(
+                                  pageImage: 'assets/images/Page1.png',
+                                  characterImage: 'assets/images/characters/Character1.png',
+                                  avatar: widget.avatar,
+                                ),
+                              )
+                            : _currentPage == 2
+                                ? Transform.scale(
+                                    scale: 1.2,
+                                    child: PagePreview(
+                                      pageImage: 'assets/images/Page2.png',
+                                      characterImage: 'assets/images/characters/Character2.png',
+                                      avatar: widget.avatar,
+                                      characterOffset: const Offset(150, 50),
+                                    ),
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(widget.avatar.imagePath, height: 300),
+                                      const SizedBox(height: 20),
+                                      Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
+                                    ],
+                                  ),
                   ),
                 ),
               ),
