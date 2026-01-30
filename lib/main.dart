@@ -31,18 +31,12 @@ class MagicBooksApp extends StatelessWidget {
 class AvatarData {
   String name;
   String gender; // 'boy' or 'girl'
-  Color skinTone;
-  String hairStyle; // 'short', 'long', 'curly'
-  Color hairColor;
-  bool hasGlasses;
+  String imagePath;
 
   AvatarData({
     this.name = '',
     this.gender = 'boy',
-    this.skinTone = const Color(0xFFFFDBAC),
-    this.hairStyle = 'short',
-    this.hairColor = Colors.brown,
-    this.hasGlasses = false,
+    this.imagePath = 'assets/images/characters/boy1.png',
   });
 }
 
@@ -52,6 +46,7 @@ class BookData {
   final String description;
   final String price;
   final List<String> pages;
+  final bool isISpy;
 
   BookData({
     required this.title,
@@ -59,10 +54,28 @@ class BookData {
     required this.description,
     required this.price,
     required this.pages,
+    this.isISpy = false,
   });
 }
 
+final List<String> boyCharacters = List.generate(6, (i) => 'assets/images/characters/boy${i + 1}.png');
+final List<String> girlCharacters = List.generate(6, (i) => 'assets/images/characters/girl${i + 1}.png');
+
 final List<BookData> books = [
+  BookData(
+    title: 'I Spy Adventure',
+    coverImage: 'assets/images/cover.jpg',
+    description: 'A classic game of I Spy, personalized just for you!',
+    price: '\$24.99',
+    isISpy: true,
+    pages: [
+      "I spy with my little eye, [NAME] hiding behind a big red boat! Can you find them?",
+      "Now [NAME] is near the lighthouse. Is that a cat climbing up the stairs? Keep looking!",
+      "I spy [NAME] in a submarine! Deep under the sea, looking for sunken treasure.",
+      "Look! [NAME] is riding in a helicopter over a field of giant strawberries. How silly!",
+      "Finally, I spy [NAME] at home, reading their very own 'I Spy' book. Great job, explorer!"
+    ],
+  ),
   BookData(
     title: 'Space Adventure',
     coverImage: 'assets/images/space.png',
@@ -87,19 +100,6 @@ final List<BookData> books = [
       "Suddenly, a baby elephant trumpeted for help! [NAME] used a sturdy branch to help the little one out of the mud.",
       "To say thank you, the monkeys led [NAME] to the Golden Banana Temple. It was the most beautiful place in the world.",
       "Heading home, [NAME] wore a crown of jungle flowers. Today was the best day ever, and the jungle was now a friend."
-    ],
-  ),
-  BookData(
-    title: 'Underwater Mystery',
-    coverImage: 'assets/images/underwater.png',
-    description: 'Dive deep into a world of magic and mermaids.',
-    price: '\$24.99',
-    pages: [
-      "A glittering seashell washed up at [NAME]'s feet. When held to the ear, it whispered: 'The ocean is waiting...'",
-      "In a bright yellow submarine, [NAME] dove deep. Schools of neon fish swam by, lighting up the blue water.",
-      "Deep down, [NAME] met Marina the Mermaid. She was looking for a lost key to the Coral Palace.",
-      "With sharp eyes, [NAME] spotted the key stuck in a giant clam. Marina cheered and the palace gates opened wide.",
-      "Floating back to the surface, [NAME] saw the sunset. The ocean's mystery was solved, but the magic stayed forever."
     ],
   ),
 ];
@@ -138,11 +138,7 @@ class _FeaturedBooksSection extends StatelessWidget {
         children: [
           const Text(
             'Explore Our Magic Library',
-            style: TextStyle(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2D3436),
-            ),
+            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Color(0xFF2D3436)),
           ),
           const SizedBox(height: 10),
           const Text(
@@ -163,7 +159,6 @@ class _FeaturedBooksSection extends StatelessWidget {
 
 class _BookCard extends StatelessWidget {
   final BookData book;
-
   const _BookCard({required this.book});
 
   @override
@@ -173,71 +168,36 @@ class _BookCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          )
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Image.asset(
-              book.coverImage,
-              height: 350,
-              width: 300,
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(book.coverImage, height: 350, width: 300, fit: BoxFit.cover),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  book.title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3436),
-                  ),
-                ),
+                Text(book.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2D3436))),
                 const SizedBox(height: 10),
-                Text(
-                  book.description,
-                  style: const TextStyle(color: Color(0xFF636E72), height: 1.4),
-                ),
+                Text(book.description, style: const TextStyle(color: Color(0xFF636E72), height: 1.4)),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      book.price,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF6C63FF),
-                      ),
-                    ),
+                    Text(book.price, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Color(0xFF6C63FF))),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PersonalizationPage(book: book),
-                          ),
-                        );
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => PersonalizationPage(book: book)));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6C63FF),
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       child: const Text('Personalize'),
                     ),
@@ -254,7 +214,6 @@ class _BookCard extends StatelessWidget {
 
 class PersonalizationPage extends StatefulWidget {
   final BookData book;
-
   const PersonalizationPage({super.key, required this.book});
 
   @override
@@ -268,11 +227,7 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Personalizing: ${widget.book.title}'),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
+      appBar: AppBar(title: Text('Personalizing: ${widget.book.title}'), elevation: 0, backgroundColor: Colors.transparent),
       body: Row(
         children: [
           // Left: Controls
@@ -283,13 +238,8 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Customize Your Hero',
-                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                  ),
+                  const Text('Customize Your Hero', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 30),
-                  
-                  // Name Input
                   const Text('Child\'s Name', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
                   TextField(
@@ -303,70 +253,51 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
-                  // Gender
                   const Text('Gender', style: TextStyle(fontWeight: FontWeight.bold)),
                   Row(
                     children: [
-                      _choiceChip('Boy', _avatar.gender == 'boy', () => setState(() => _avatar.gender = 'boy')),
-                      _choiceChip('Girl', _avatar.gender == 'girl', () => setState(() => _avatar.gender = 'girl')),
+                      _choiceChip('Boy', _avatar.gender == 'boy', () {
+                        setState(() {
+                          _avatar.gender = 'boy';
+                          _avatar.imagePath = boyCharacters[0];
+                        });
+                      }),
+                      _choiceChip('Girl', _avatar.gender == 'girl', () {
+                        setState(() {
+                          _avatar.gender = 'girl';
+                          _avatar.imagePath = girlCharacters[0];
+                        });
+                      }),
                     ],
                   ),
                   const SizedBox(height: 30),
-
-                  // Skin Tone
-                  const Text('Skin Tone', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Select Character', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      _colorSelect(const Color(0xFFFFDBAC), _avatar.skinTone, (c) => setState(() => _avatar.skinTone = c)),
-                      _colorSelect(const Color(0xFFF1C27D), _avatar.skinTone, (c) => setState(() => _avatar.skinTone = c)),
-                      _colorSelect(const Color(0xFFE0AC69), _avatar.skinTone, (c) => setState(() => _avatar.skinTone = c)),
-                      _colorSelect(const Color(0xFF8D5524), _avatar.skinTone, (c) => setState(() => _avatar.skinTone = c)),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Hair Style
-                  const Text('Hair Style', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Row(
-                    children: [
-                      _choiceChip('Short', _avatar.hairStyle == 'short', () => setState(() => _avatar.hairStyle = 'short')),
-                      _choiceChip('Long', _avatar.hairStyle == 'long', () => setState(() => _avatar.hairStyle = 'long')),
-                      _choiceChip('Curly', _avatar.hairStyle == 'curly', () => setState(() => _avatar.hairStyle = 'curly')),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Hair Color
-                  const Text('Hair Color', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      _colorSelect(Colors.brown, _avatar.hairColor, (c) => setState(() => _avatar.hairColor = c)),
-                      _colorSelect(Colors.black, _avatar.hairColor, (c) => setState(() => _avatar.hairColor = c)),
-                      _colorSelect(const Color(0xFFD4AF37), _avatar.hairColor, (c) => setState(() => _avatar.hairColor = c)), // Blonde
-                      _colorSelect(const Color(0xFFA52A2A), _avatar.hairColor, (c) => setState(() => _avatar.hairColor = c)), // Red
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Glasses
-                  Row(
-                    children: [
-                      const Text('Glasses', style: TextStyle(fontWeight: FontWeight.bold)),
-                      Switch(
-                        value: _avatar.hasGlasses,
-                        onChanged: (val) => setState(() => _avatar.hasGlasses = val),
-                        activeColor: const Color(0xFF6C63FF),
-                      ),
-                    ],
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 10),
+                    itemCount: 6,
+                    itemBuilder: (context, index) {
+                      String path = _avatar.gender == 'boy' ? boyCharacters[index] : girlCharacters[index];
+                      bool isSelected = _avatar.imagePath == path;
+                      return GestureDetector(
+                        onTap: () => setState(() => _avatar.imagePath = path),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: isSelected ? const Color(0xFF6C63FF) : Colors.transparent, width: 3),
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                          ),
+                          child: Image.asset(path),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
           ),
-          
           // Right: Preview
           Expanded(
             flex: 3,
@@ -375,22 +306,15 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AvatarPreview(avatar: _avatar),
+                  _PreviewArea(avatar: _avatar, book: widget.book),
                   const SizedBox(height: 40),
                   ElevatedButton(
                     onPressed: () {
                       if (_avatar.name.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a name!')),
-                        );
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a name!')));
                         return;
                       }
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StoryBookPage(book: widget.book, avatar: _avatar),
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => StoryBookPage(book: widget.book, avatar: _avatar)));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6C63FF),
@@ -421,207 +345,79 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
       ),
     );
   }
+}
 
-  Widget _colorSelect(Color color, Color selectedColor, Function(Color) onSelect) {
-    bool isSelected = color == selectedColor;
-    return GestureDetector(
-      onTap: () => onSelect(color),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: isSelected ? const Color(0xFF6C63FF) : Colors.transparent,
-            width: 3,
-          ),
-        ),
-      ),
+class _PreviewArea extends StatelessWidget {
+  final AvatarData avatar;
+  final BookData book;
+  const _PreviewArea({required this.avatar, required this.book});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text('Cover Preview', style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 20),
+        BookCoverPreview(avatar: avatar),
+      ],
     );
   }
 }
 
-class AvatarPreview extends StatelessWidget {
+class BookCoverPreview extends StatelessWidget {
   final AvatarData avatar;
-
-  const AvatarPreview({super.key, required this.avatar});
+  const BookCoverPreview({super.key, required this.avatar});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Background Glow
-          Container(
-            width: 350,
-            height: 350,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [const Color(0xFF6C63FF).withOpacity(0.1), Colors.transparent],
-              ),
-            ),
-          ),
-          
-          // Avatar Drawing
-          SizedBox(
-            width: 250,
-            height: 300,
-            child: Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                // Face
-                Positioned(
-                  top: 50,
-                  child: Container(
-                    width: 150,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      color: avatar.skinTone,
-                      borderRadius: BorderRadius.circular(70),
-                    ),
-                  ),
-                ),
-                
-                // Hair
-                _buildHair(),
-
-                // Eyes
-                Positioned(
-                  top: 110,
-                  child: Row(
-                    children: [
-                      _eye(),
-                      const SizedBox(width: 40),
-                      _eye(),
-                    ],
-                  ),
-                ),
-
-                // Mouth
-                Positioned(
-                  top: 170,
-                  child: Container(
-                    width: 40,
-                    height: 10,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Glasses
-                if (avatar.hasGlasses)
-                  Positioned(
-                    top: 100,
-                    child: Row(
-                      children: [
-                        _glassFrame(),
-                        Container(width: 10, height: 2, color: Colors.black54),
-                        _glassFrame(),
-                      ],
-                    ),
-                  ),
-
-                // Body (Shoulders)
-                Positioned(
-                  bottom: 0,
-                  child: Container(
-                    width: 200,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6C63FF),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+    return Container(
+      width: 400,
+      height: 400,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
       ),
-    );
-  }
-
-  Widget _buildHair() {
-    if (avatar.hairStyle == 'short') {
-      return Positioned(
-        top: 30,
-        child: Container(
-          width: 160,
-          height: 60,
-          decoration: BoxDecoration(
-            color: avatar.hairColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(80)),
-          ),
-        ),
-      );
-    } else if (avatar.hairStyle == 'long') {
-      return Positioned(
-        top: 30,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
         child: Stack(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           children: [
-            // Sides
-            Container(
-              width: 170,
-              height: 200,
-              decoration: BoxDecoration(
-                color: avatar.hairColor,
-                borderRadius: BorderRadius.circular(40),
+            // Base Cover
+            Image.asset('assets/images/cover.jpg', width: 400, height: 400, fit: BoxFit.cover),
+            
+            // Character in Lens
+            Positioned(
+              top: 110, // Adjusted to fit center of magnifying glass lens
+              left: 110,
+              child: SizedBox(
+                width: 180,
+                height: 180,
+                child: Center(
+                  child: Image.asset(avatar.imagePath, fit: BoxFit.contain),
+                ),
               ),
             ),
-            // Top
-            Container(
-              width: 160,
-              height: 50,
-              decoration: BoxDecoration(
-                color: avatar.hairColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(80)),
+            
+            // Name below Lens
+            Positioned(
+              bottom: 40,
+              child: Text(
+                avatar.name.toUpperCase(),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: 2,
+                  shadows: [
+                    Shadow(offset: const Offset(2, 2), blurRadius: 4, color: Colors.black.withOpacity(0.5)),
+                    Shadow(offset: const Offset(-1, -1), blurRadius: 0, color: Colors.grey[400]!),
+                  ],
+                ),
               ),
             ),
           ],
         ),
-      );
-    } else { // Curly
-       return Positioned(
-        top: 20,
-        child: Wrap(
-          children: List.generate(12, (i) => Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(color: avatar.hairColor, shape: BoxShape.circle),
-          )),
-        ),
-      );
-    }
-  }
-
-  Widget _eye() {
-    return Container(
-      width: 15,
-      height: 15,
-      decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
-    );
-  }
-
-  Widget _glassFrame() {
-    return Container(
-      width: 50,
-      height: 40,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black54, width: 3),
-        borderRadius: BorderRadius.circular(10),
       ),
     );
   }
@@ -630,7 +426,6 @@ class AvatarPreview extends StatelessWidget {
 class StoryBookPage extends StatefulWidget {
   final BookData book;
   final AvatarData avatar;
-
   const StoryBookPage({super.key, required this.book, required this.avatar});
 
   @override
@@ -664,28 +459,28 @@ class _StoryBookPageState extends State<StoryBookPage> {
           ),
           child: Row(
             children: [
-              // Left side: Illustration
+              // Left: Illustration (Using the Cover Preview logic for first page, then just avatar for others)
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).primaryColor.withOpacity(0.05),
                     borderRadius: const BorderRadius.horizontal(left: Radius.circular(20)),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Transform.scale(scale: 0.8, child: AvatarPreview(avatar: widget.avatar)),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Inside the Story...',
-                        style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic),
-                      ),
-                    ],
+                  child: Center(
+                    child: _currentPage == 0 
+                      ? Transform.scale(scale: 0.8, child: BookCoverPreview(avatar: widget.avatar))
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(widget.avatar.imagePath, height: 300),
+                            const SizedBox(height: 20),
+                            Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
+                          ],
+                        ),
                   ),
                 ),
               ),
-              
-              // Right side: Story Content
+              // Right: Story Content
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(60.0),
@@ -693,49 +488,25 @@ class _StoryBookPageState extends State<StoryBookPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Chapter ${_currentPage + 1}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      Text('Chapter ${_currentPage + 1}', style: TextStyle(fontSize: 14, letterSpacing: 2, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
                       const SizedBox(height: 20),
                       Text(
                         widget.book.pages[_currentPage].replaceAll('[NAME]', widget.avatar.name),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          height: 1.6,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: const TextStyle(fontSize: 24, height: 1.6, fontWeight: FontWeight.w500),
                       ),
                       const Spacer(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           if (_currentPage > 0)
-                            TextButton.icon(
-                              onPressed: () => setState(() => _currentPage--),
-                              icon: const Icon(Icons.arrow_back),
-                              label: const Text('Back'),
-                            )
+                            TextButton.icon(onPressed: () => setState(() => _currentPage--), icon: const Icon(Icons.arrow_back), label: const Text('Back'))
                           else
                             const SizedBox(),
                           if (_currentPage < 4)
-                            ElevatedButton.icon(
-                              onPressed: () => setState(() => _currentPage++),
-                              icon: const Icon(Icons.arrow_forward),
-                              label: const Text('Next Page'),
-                            )
+                            ElevatedButton.icon(onPressed: () => setState(() => _currentPage++), icon: const Icon(Icons.arrow_forward), label: const Text('Next Page'))
                           else
                             ElevatedButton(
-                              onPressed: () {
-                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Purchase functionality coming soon!')),
-                                );
-                              },
+                              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order placed! (Demo only)'))),
                               style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
                               child: const Text('Buy This Book'),
                             ),
@@ -753,11 +524,10 @@ class _StoryBookPageState extends State<StoryBookPage> {
   }
 }
 
-// --- Original Components (Refactored to match new style) ---
+// --- Original Components Refactored ---
 
 class _Header extends StatelessWidget {
   const _Header();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -766,10 +536,7 @@ class _Header extends StatelessWidget {
         children: [
           const Icon(Icons.auto_stories, color: Color(0xFF6C63FF), size: 40),
           const SizedBox(width: 10),
-          const Text(
-            'MagicBooks',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF2D3436)),
-          ),
+          const Text('MagicBooks', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF2D3436))),
           const Spacer(),
           _navLink('Home'),
           _navLink('Our Books'),
@@ -777,29 +544,18 @@ class _Header extends StatelessWidget {
           const SizedBox(width: 20),
           ElevatedButton(
             onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6C63FF),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6C63FF), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15)),
             child: const Text('Login / Signup'),
           ),
         ],
       ),
     );
   }
-
-  Widget _navLink(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: TextButton(onPressed: () {}, child: Text(title, style: const TextStyle(color: Color(0xFF636E72), fontWeight: FontWeight.w600))),
-    );
-  }
+  Widget _navLink(String title) => Padding(padding: const EdgeInsets.symmetric(horizontal: 15), child: TextButton(onPressed: () {}, child: Text(title, style: const TextStyle(color: Color(0xFF636E72), fontWeight: FontWeight.w600))));
 }
 
 class _HeroSection extends StatelessWidget {
   const _HeroSection();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -811,32 +567,20 @@ class _HeroSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Make Your Child the Hero of Their Own Adventure',
-                  style: TextStyle(fontSize: 48, fontWeight: FontWeight.w900, height: 1.2),
-                ),
+                const Text('Make Your Child the Hero of Their Own Adventure', style: TextStyle(fontSize: 48, fontWeight: FontWeight.w900, height: 1.2)),
                 const SizedBox(height: 20),
-                const Text(
-                  'Create personalized books that spark imagination. Add your child\'s name, choose their appearance, and embark on magical journeys together.',
-                  style: TextStyle(fontSize: 18, color: Color(0xFF636E72), height: 1.5),
-                ),
+                const Text('Create personalized books that spark imagination. Add your child\'s name, choose their appearance, and embark on magical journeys together.', style: TextStyle(fontSize: 18, color: Color(0xFF636E72), height: 1.5)),
                 const SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6C63FF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
-                  ),
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6C63FF), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20)),
                   child: const Text('Start Creating', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 50),
-          Expanded(
-            child: Image.asset('assets/images/space.png', width: 400),
-          ),
+          Expanded(child: Image.asset('assets/images/cover.jpg', width: 400)),
         ],
       ),
     );
@@ -845,7 +589,6 @@ class _HeroSection extends StatelessWidget {
 
 class _HowItWorks extends StatelessWidget {
   const _HowItWorks();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -855,35 +598,20 @@ class _HowItWorks extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _stepItem(Icons.edit, 'Customize', 'Enter name & pick appearance'),
+          _stepItem(Icons.edit, 'Customize', 'Enter name & pick character'),
           _stepItem(Icons.visibility, 'Preview', 'Read the story online'),
           _stepItem(Icons.local_shipping, 'Print', 'Delivered to your door'),
         ],
       ),
     );
   }
-
-  Widget _stepItem(IconData icon, String title, String desc) {
-    return Column(
-      children: [
-        Icon(icon, color: const Color(0xFF6C63FF), size: 40),
-        const SizedBox(height: 20),
-        Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-        const SizedBox(height: 10),
-        Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.7))),
-      ],
-    );
-  }
+  Widget _stepItem(IconData icon, String title, String desc) => Column(children: [Icon(icon, color: const Color(0xFF6C63FF), size: 40), const SizedBox(height: 20), Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)), const SizedBox(height: 10), Text(desc, style: TextStyle(color: Colors.white.withOpacity(0.7)))]);
 }
 
 class _Footer extends StatelessWidget {
   const _Footer();
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40),
-      child: const Center(child: Text('© 2026 MagicBooks Inc.')),
-    );
+    return Container(padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 40), child: const Center(child: Text('© 2026 MagicBooks Inc.')));
   }
 }
