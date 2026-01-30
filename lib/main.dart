@@ -303,28 +303,32 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
             flex: 3,
             child: Container(
               color: const Color(0xFFF8F9FA),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _PreviewArea(avatar: _avatar, book: widget.book),
-                  const SizedBox(height: 40),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_avatar.name.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a name!')));
-                        return;
-                      }
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => StoryBookPage(book: widget.book, avatar: _avatar)));
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6C63FF),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                      textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    _PreviewArea(avatar: _avatar, book: widget.book),
+                    const SizedBox(height: 40),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_avatar.name.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter a name!')));
+                          return;
+                        }
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => StoryBookPage(book: widget.book, avatar: _avatar)));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6C63FF),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                        textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      child: const Text('Generate My Story'),
                     ),
-                    child: const Text('Generate My Story'),
-                  ),
-                ],
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
           ),
@@ -356,9 +360,38 @@ class _PreviewArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Text('Cover Preview', style: TextStyle(fontSize: 18, color: Colors.grey, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 20),
+        const Text('Book Preview', style: TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        const Text('See how your child appears in the book!', style: TextStyle(color: Colors.grey)),
+        const SizedBox(height: 30),
+        
+        // Cover
+        const Text('Cover', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+        const SizedBox(height: 10),
         BookCoverPreview(avatar: avatar),
+        
+        const SizedBox(height: 50),
+        
+        // Page 1
+        const Text('Page 1', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+        const SizedBox(height: 10),
+        PagePreview(
+          pageImage: 'assets/images/Page1.png',
+          characterImage: 'assets/images/characters/Character1.png',
+          avatar: avatar,
+        ),
+        
+        const SizedBox(height: 50),
+        
+        // Page 2
+        const Text('Page 2', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+        const SizedBox(height: 10),
+        PagePreview(
+          pageImage: 'assets/images/Page2.png',
+          characterImage: 'assets/images/characters/Character2.png',
+          avatar: avatar,
+          characterOffset: const Offset(150, 50), // Adjusted for page 2 layout
+        ),
       ],
     );
   }
@@ -383,12 +416,9 @@ class BookCoverPreview extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Base Cover
             Image.asset('assets/images/cover.jpg', width: 400, height: 400, fit: BoxFit.cover),
-            
-            // Character in Lens
             Positioned(
-              top: 110, // Adjusted to fit center of magnifying glass lens
+              top: 110,
               left: 110,
               child: SizedBox(
                 width: 180,
@@ -398,8 +428,6 @@ class BookCoverPreview extends StatelessWidget {
                 ),
               ),
             ),
-            
-            // Name below Lens
             Positioned(
               bottom: 40,
               child: Text(
@@ -413,6 +441,61 @@ class BookCoverPreview extends StatelessWidget {
                     Shadow(offset: const Offset(2, 2), blurRadius: 4, color: Colors.black.withOpacity(0.5)),
                     Shadow(offset: const Offset(-1, -1), blurRadius: 0, color: Colors.grey[400]!),
                   ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PagePreview extends StatelessWidget {
+  final String pageImage;
+  final String characterImage;
+  final AvatarData avatar;
+  final Offset characterOffset;
+
+  const PagePreview({
+    super.key,
+    required this.pageImage,
+    required this.characterImage,
+    required this.avatar,
+    this.characterOffset = const Offset(150, 80),
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 600, // Wider for two-page spread
+      height: 300,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Stack(
+          children: [
+            Image.asset(pageImage, width: 600, height: 300, fit: BoxFit.cover),
+            
+            // Character in Circle on the right side
+            Positioned(
+              right: 80,
+              top: 80,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: const Color(0xFF6C63FF), width: 3),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                ),
+                child: ClipOval(
+                  child: Image.asset(characterImage, fit: BoxFit.contain),
                 ),
               ),
             ),
@@ -459,7 +542,6 @@ class _StoryBookPageState extends State<StoryBookPage> {
           ),
           child: Row(
             children: [
-              // Left: Illustration (Using the Cover Preview logic for first page, then just avatar for others)
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -480,7 +562,6 @@ class _StoryBookPageState extends State<StoryBookPage> {
                   ),
                 ),
               ),
-              // Right: Story Content
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(60.0),
