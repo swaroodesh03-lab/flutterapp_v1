@@ -30,15 +30,11 @@ class MagicBooksApp extends StatelessWidget {
 
 class AvatarData {
   String name;
-  String gender; // 'boy' or 'girl'
-  String imagePath;
   Color skinTone;
   Color hairColor;
 
   AvatarData({
     this.name = '',
-    this.gender = 'boy',
-    this.imagePath = 'assets/images/characters/boy1.png',
     this.skinTone = const Color(0xFFFFDBAC),
     this.hairColor = Colors.brown,
   });
@@ -61,9 +57,6 @@ class BookData {
     this.isISpy = false,
   });
 }
-
-final List<String> boyCharacters = List.generate(6, (i) => 'assets/images/characters/boy${i + 1}.png');
-final List<String> girlCharacters = List.generate(6, (i) => 'assets/images/characters/girl${i + 1}.png');
 
 final List<BookData> books = [
   BookData(
@@ -179,7 +172,7 @@ class _BookCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Image.asset(book.coverImage == 'assets/images/cover_updated.jpg' ? 'assets/images/cover_updated.jpg' : (book.coverImage == 'assets/images/cover.jpg' ? 'assets/images/cover.jpg' : book.coverImage), height: 350, width: 300, fit: BoxFit.cover),
+            child: Image.asset(book.coverImage, height: 350, width: 300, fit: BoxFit.cover),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
@@ -274,24 +267,6 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  const Text('Gender', style: TextStyle(fontWeight: FontWeight.bold)),
-                  Row(
-                    children: [
-                      _choiceChip('Boy', _avatar.gender == 'boy', () {
-                        setState(() {
-                          _avatar.gender = 'boy';
-                          _avatar.imagePath = boyCharacters[0];
-                        });
-                      }),
-                      _choiceChip('Girl', _avatar.gender == 'girl', () {
-                        setState(() {
-                          _avatar.gender = 'girl';
-                          _avatar.imagePath = girlCharacters[0];
-                        });
-                      }),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
                   const Text('Skin Tone', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -338,30 +313,6 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
                         );
                       },
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  const Text('Select Character Base', style: TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 10),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 10),
-                    itemCount: 6,
-                    itemBuilder: (context, index) {
-                      String path = _avatar.gender == 'boy' ? boyCharacters[index] : girlCharacters[index];
-                      bool isSelected = _avatar.imagePath == path;
-                      return GestureDetector(
-                        onTap: () => setState(() => _avatar.imagePath = path),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: isSelected ? const Color(0xFF6C63FF) : Colors.transparent, width: 3),
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white,
-                          ),
-                          child: Image.asset(path),
-                        ),
-                      );
-                    },
                   ),
                 ],
               ),
@@ -442,20 +393,40 @@ class BookCoverPreview extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Background cover
+            // Background cover with the default white character
             Image.asset('assets/images/cover_updated.jpg', width: 400, height: 400, fit: BoxFit.cover),
             
-            // Character with tone filters - High resolution transparent assets
+            // Skin Tone Overlay
             Positioned(
-              top: 55, // Adjusted for full body display
+              top: 55,
               left: 55,
               child: SizedBox(
-                width: 290, // Increased to fill the lens area
+                width: 290,
                 height: 290,
                 child: Center(
-                  child: ColorFiltered(
-                    colorFilter: ColorFilter.mode(avatar.skinTone.withOpacity(0.1), BlendMode.multiply),
-                    child: Image.asset(avatar.imagePath, fit: BoxFit.contain),
+                  child: Image.asset(
+                    'assets/images/skin_mask.png',
+                    fit: BoxFit.contain,
+                    color: avatar.skinTone,
+                    colorBlendMode: BlendMode.modulate,
+                  ),
+                ),
+              ),
+            ),
+            
+            // Hair Color Overlay
+            Positioned(
+              top: 55,
+              left: 55,
+              child: SizedBox(
+                width: 290,
+                height: 290,
+                child: Center(
+                  child: Image.asset(
+                    'assets/images/hair_mask.png',
+                    fit: BoxFit.contain,
+                    color: avatar.hairColor,
+                    colorBlendMode: BlendMode.modulate,
                   ),
                 ),
               ),
@@ -533,10 +504,18 @@ class _StoryBookPageState extends State<StoryBookPage> {
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                            ColorFiltered(
-                              colorFilter: ColorFilter.mode(widget.avatar.skinTone.withOpacity(0.1), BlendMode.multiply),
-                              child: Image.asset(widget.avatar.imagePath, height: 400, fit: BoxFit.contain),
-                            ),
+                              // For other pages, show the same character logic
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  // Base line art/character (using the original Character1 as a template)
+                                  Image.asset('assets/images/characters/Character1.png', height: 400, fit: BoxFit.contain, color: Colors.white, colorBlendMode: BlendMode.dst),
+                                  // Skin Tone
+                                  Image.asset('assets/images/skin_mask.png', height: 400, fit: BoxFit.contain, color: widget.avatar.skinTone, colorBlendMode: BlendMode.modulate),
+                                  // Hair Color
+                                  Image.asset('assets/images/hair_mask.png', height: 400, fit: BoxFit.contain, color: widget.avatar.hairColor, colorBlendMode: BlendMode.modulate),
+                                ],
+                              ),
                               const SizedBox(height: 20),
                               Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
                             ],
@@ -587,7 +566,7 @@ class _StoryBookPageState extends State<StoryBookPage> {
   }
 }
 
-// --- Original Components Refactored ---
+// --- Header/Footer Components ---
 
 class _Header extends StatelessWidget {
   const _Header();
@@ -661,7 +640,7 @@ class _HowItWorks extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _stepItem(Icons.edit, 'Customize', 'Enter name & pick character'),
+          _stepItem(Icons.edit, 'Customize', 'Enter name & pick colors'),
           _stepItem(Icons.visibility, 'Preview', 'Read the story online'),
           _stepItem(Icons.local_shipping, 'Print', 'Delivered to your door'),
         ],
