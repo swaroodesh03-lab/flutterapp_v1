@@ -445,18 +445,19 @@ class BookCoverPreview extends StatelessWidget {
             // Background cover
             Image.asset('assets/images/cover_updated.jpg', width: 400, height: 400, fit: BoxFit.cover),
             
-            // Character with tone filters
+            // Character with tone filters inside a circular lens
             Positioned(
-              top: 110,
-              left: 110,
+              top: 105, // Centering adjustments
+              left: 105,
               child: SizedBox(
-                width: 180,
-                height: 180,
+                width: 190,
+                height: 190,
                 child: Center(
-                  child: ColorFiltered(
-                    // Applying a slight tint based on skin tone selection
-                    colorFilter: ColorFilter.mode(avatar.skinTone.withOpacity(0.2), BlendMode.multiply),
-                    child: Image.asset(avatar.imagePath, fit: BoxFit.contain),
+                  child: ClipOval(
+                    child: ColorFiltered(
+                      colorFilter: ColorFilter.mode(avatar.skinTone.withOpacity(0.15), BlendMode.multiply),
+                      child: Image.asset(avatar.imagePath, fit: BoxFit.cover),
+                    ),
                   ),
                 ),
               ),
