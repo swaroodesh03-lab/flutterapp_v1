@@ -445,19 +445,17 @@ class BookCoverPreview extends StatelessWidget {
             // Background cover
             Image.asset('assets/images/cover_updated.jpg', width: 400, height: 400, fit: BoxFit.cover),
             
-            // Character with tone filters inside a circular lens - Adjusted to cover placeholder
+            // Character with tone filters - High resolution transparent assets
             Positioned(
-              top: 85, // Moved up to align with magnifying glass lens
-              left: 85, // Moved left to align
+              top: 55, // Adjusted for full body display
+              left: 55,
               child: SizedBox(
-                width: 230, // Increased size to fully cover white character placeholder
-                height: 230,
+                width: 290, // Increased to fill the lens area
+                height: 290,
                 child: Center(
-                  child: ClipOval(
-                    child: ColorFiltered(
-                      colorFilter: ColorFilter.mode(avatar.skinTone.withOpacity(0.12), BlendMode.multiply),
-                      child: Image.asset(avatar.imagePath, fit: BoxFit.cover),
-                    ),
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(avatar.skinTone.withOpacity(0.1), BlendMode.multiply),
+                    child: Image.asset(avatar.imagePath, fit: BoxFit.contain),
                   ),
                 ),
               ),
@@ -535,11 +533,9 @@ class _StoryBookPageState extends State<StoryBookPage> {
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                            ClipOval(
-                              child: ColorFiltered(
-                                colorFilter: ColorFilter.mode(widget.avatar.skinTone.withOpacity(0.12), BlendMode.multiply),
-                                child: Image.asset(widget.avatar.imagePath, height: 300, width: 300, fit: BoxFit.cover),
-                              ),
+                            ColorFiltered(
+                              colorFilter: ColorFilter.mode(widget.avatar.skinTone.withOpacity(0.1), BlendMode.multiply),
+                              child: Image.asset(widget.avatar.imagePath, height: 400, fit: BoxFit.contain),
                             ),
                               const SizedBox(height: 20),
                               Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
