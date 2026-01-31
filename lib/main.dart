@@ -32,11 +32,15 @@ class AvatarData {
   String name;
   String gender; // 'boy' or 'girl'
   String imagePath;
+  Color skinTone;
+  Color hairColor;
 
   AvatarData({
     this.name = '',
     this.gender = 'boy',
     this.imagePath = 'assets/images/characters/boy1.png',
+    this.skinTone = const Color(0xFFFFDBAC),
+    this.hairColor = Colors.brown,
   });
 }
 
@@ -64,7 +68,7 @@ final List<String> girlCharacters = List.generate(6, (i) => 'assets/images/chara
 final List<BookData> books = [
   BookData(
     title: 'I Spy Adventure',
-    coverImage: 'assets/images/cover.jpg',
+    coverImage: 'assets/images/cover_updated.jpg',
     description: 'A classic game of I Spy, personalized just for you!',
     price: '\$24.99',
     isISpy: true,
@@ -175,7 +179,7 @@ class _BookCard extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            child: Image.asset(book.coverImage, height: 350, width: 300, fit: BoxFit.cover),
+            child: Image.asset(book.coverImage == 'assets/images/cover_updated.jpg' ? 'assets/images/cover_updated.jpg' : (book.coverImage == 'assets/images/cover.jpg' ? 'assets/images/cover.jpg' : book.coverImage), height: 350, width: 300, fit: BoxFit.cover),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
@@ -224,6 +228,23 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
   final AvatarData _avatar = AvatarData();
   final TextEditingController _nameController = TextEditingController();
 
+  final List<Color> _skinTones = [
+    const Color(0xFFFFDBAC),
+    const Color(0xFFF1C27D),
+    const Color(0xFFE0AC69),
+    const Color(0xFF8D5524),
+    const Color(0xFFC68642),
+  ];
+
+  final List<Color> _hairColors = [
+    Colors.brown,
+    const Color(0xFF4B2C20),
+    const Color(0xFF000000),
+    const Color(0xFFD4A017),
+    const Color(0xFFA52A2A),
+    const Color(0xFFE2A76F),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -271,7 +292,55 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
                     ],
                   ),
                   const SizedBox(height: 30),
-                  const Text('Select Character', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text('Skin Tone', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _skinTones.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () => setState(() => _avatar.skinTone = _skinTones[index]),
+                          child: Container(
+                            width: 40,
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: _skinTones[index],
+                              shape: BoxShape.circle,
+                              border: Border.all(color: _avatar.skinTone == _skinTones[index] ? Colors.blue : Colors.grey, width: 2),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  const Text('Hair Color', style: TextStyle(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _hairColors.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () => setState(() => _avatar.hairColor = _hairColors[index]),
+                          child: Container(
+                            width: 40,
+                            margin: const EdgeInsets.only(right: 10),
+                            decoration: BoxDecoration(
+                              color: _hairColors[index],
+                              shape: BoxShape.circle,
+                              border: Border.all(color: _avatar.hairColor == _hairColors[index] ? Colors.blue : Colors.grey, width: 2),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  const Text('Select Character Base', style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 10),
                   GridView.builder(
                     shrinkWrap: true,
@@ -308,7 +377,9 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-                    _PreviewArea(avatar: _avatar, book: widget.book),
+                    const Text('Book Preview', style: TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    BookCoverPreview(avatar: _avatar, book: widget.book),
                     const SizedBox(height: 40),
                     ElevatedButton(
                       onPressed: () {
@@ -351,55 +422,10 @@ class _PersonalizationPageState extends State<PersonalizationPage> {
   }
 }
 
-class _PreviewArea extends StatelessWidget {
-  final AvatarData avatar;
-  final BookData book;
-  const _PreviewArea({required this.avatar, required this.book});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('Book Preview', style: TextStyle(fontSize: 22, color: Colors.black87, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 10),
-        const Text('See how your child appears in the book!', style: TextStyle(color: Colors.grey)),
-        const SizedBox(height: 30),
-        
-        // Cover
-        const Text('Cover', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-        const SizedBox(height: 10),
-        BookCoverPreview(avatar: avatar),
-        
-        const SizedBox(height: 50),
-        
-        // Page 1
-        const Text('Page 1', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-        const SizedBox(height: 10),
-        PagePreview(
-          pageImage: 'assets/images/Page1.png',
-          characterImage: 'assets/images/characters/Character1.png',
-          avatar: avatar,
-        ),
-        
-        const SizedBox(height: 50),
-        
-        // Page 2
-        const Text('Page 2', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-        const SizedBox(height: 10),
-        PagePreview(
-          pageImage: 'assets/images/Page2.png',
-          characterImage: 'assets/images/characters/Character2.png',
-          avatar: avatar,
-          characterOffset: const Offset(150, 50), // Adjusted for page 2 layout
-        ),
-      ],
-    );
-  }
-}
-
 class BookCoverPreview extends StatelessWidget {
   final AvatarData avatar;
-  const BookCoverPreview({super.key, required this.avatar});
+  final BookData book;
+  const BookCoverPreview({super.key, required this.avatar, required this.book});
 
   @override
   Widget build(BuildContext context) {
@@ -416,7 +442,10 @@ class BookCoverPreview extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Image.asset('assets/images/cover.jpg', width: 400, height: 400, fit: BoxFit.cover),
+            // Background cover
+            Image.asset('assets/images/cover_updated.jpg', width: 400, height: 400, fit: BoxFit.cover),
+            
+            // Character with tone filters
             Positioned(
               top: 110,
               left: 110,
@@ -424,10 +453,16 @@ class BookCoverPreview extends StatelessWidget {
                 width: 180,
                 height: 180,
                 child: Center(
-                  child: Image.asset(avatar.imagePath, fit: BoxFit.contain),
+                  child: ColorFiltered(
+                    // Applying a slight tint based on skin tone selection
+                    colorFilter: ColorFilter.mode(avatar.skinTone.withOpacity(0.2), BlendMode.multiply),
+                    child: Image.asset(avatar.imagePath, fit: BoxFit.contain),
+                  ),
                 ),
               ),
             ),
+            
+            // Name
             Positioned(
               bottom: 40,
               child: Text(
@@ -441,61 +476,6 @@ class BookCoverPreview extends StatelessWidget {
                     Shadow(offset: const Offset(2, 2), blurRadius: 4, color: Colors.black.withOpacity(0.5)),
                     Shadow(offset: const Offset(-1, -1), blurRadius: 0, color: Colors.grey[400]!),
                   ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PagePreview extends StatelessWidget {
-  final String pageImage;
-  final String characterImage;
-  final AvatarData avatar;
-  final Offset characterOffset;
-
-  const PagePreview({
-    super.key,
-    required this.pageImage,
-    required this.characterImage,
-    required this.avatar,
-    this.characterOffset = const Offset(150, 80),
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 600, // Wider for two-page spread
-      height: 300,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20)],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Stack(
-          children: [
-            Image.asset(pageImage, width: 600, height: 300, fit: BoxFit.cover),
-            
-            // Character in Circle on the right side
-            Positioned(
-              right: 80,
-              top: 80,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFF6C63FF), width: 3),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
-                ),
-                child: ClipOval(
-                  child: Image.asset(characterImage, fit: BoxFit.contain),
                 ),
               ),
             ),
@@ -550,34 +530,18 @@ class _StoryBookPageState extends State<StoryBookPage> {
                   ),
                   child: Center(
                     child: _currentPage == 0
-                        ? Transform.scale(scale: 0.8, child: BookCoverPreview(avatar: widget.avatar))
-                        : _currentPage == 1
-                            ? Transform.scale(
-                                scale: 1.2,
-                                child: PagePreview(
-                                  pageImage: 'assets/images/Page1.png',
-                                  characterImage: 'assets/images/characters/Character1.png',
-                                  avatar: widget.avatar,
-                                ),
-                              )
-                            : _currentPage == 2
-                                ? Transform.scale(
-                                    scale: 1.2,
-                                    child: PagePreview(
-                                      pageImage: 'assets/images/Page2.png',
-                                      characterImage: 'assets/images/characters/Character2.png',
-                                      avatar: widget.avatar,
-                                      characterOffset: const Offset(150, 50),
-                                    ),
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(widget.avatar.imagePath, height: 300),
-                                      const SizedBox(height: 20),
-                                      Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
-                                    ],
-                                  ),
+                        ? Transform.scale(scale: 0.8, child: BookCoverPreview(avatar: widget.avatar, book: widget.book))
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ColorFiltered(
+                                colorFilter: ColorFilter.mode(widget.avatar.skinTone.withOpacity(0.2), BlendMode.multiply),
+                                child: Image.asset(widget.avatar.imagePath, height: 300),
+                              ),
+                              const SizedBox(height: 20),
+                              Text('Inside the Story...', style: TextStyle(color: Colors.grey[400], fontStyle: FontStyle.italic)),
+                            ],
+                          ),
                   ),
                 ),
               ),
@@ -680,7 +644,7 @@ class _HeroSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 50),
-          Expanded(child: Image.asset('assets/images/cover.jpg', width: 400)),
+          Expanded(child: Image.asset('assets/images/cover_updated.jpg', width: 400)),
         ],
       ),
     );
